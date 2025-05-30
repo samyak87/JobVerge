@@ -6,7 +6,7 @@ import morgan from 'morgan';
 
 import connectDB from './config/db.js ';
 import testRoutes from './routes/testRoutes.js';
-
+import authRoutes from './routes/authRoutes.js';
 
 
 dotenv.config();
@@ -27,6 +27,8 @@ app.use(morgan("dev")); // for logging HTTP requests
 // want to use test routes
 app.use('/api', testRoutes);
 
+// want to use auth routes
+app.use('/api/auth', authRoutes);
 
 
 const port = process.env.PORT || 8080;
