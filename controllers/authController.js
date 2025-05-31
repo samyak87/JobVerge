@@ -1,19 +1,20 @@
 import User from "../models/userModel.js";
 
 
-export const registerController = async(req, res) => {
+export const registerController = async(req, res,next) => {
     const { name, email, password, location } = req.body;
 
     // Validate input
     if (!name || !email || !password) {
-        return res.status(400).json({ message: "Please fill all fields" });
+        next("Please fill all the fields");
     }
 
     try {
         // Check if user already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ message: "User already exists" });
+            next("User already exists");
+            // return res.status(400).json({ message: "User already exists" });
         }
 
         // Create new user
@@ -26,15 +27,24 @@ export const registerController = async(req, res) => {
 
         // Save user to database
         await user.save();
+        
 
-        res.status(201).json({ message: "User registered successfully", user });
+        // Generate JWT token
+        const token = user.createJWT();
+        // Set token in cookie
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        });
+
+        res.status(201).json({ message: "User registered successfully", user,token });
     } catch (error) {
          if (error.name === 'ValidationError') {
       return res.status(400).json({
         error: Object.values(error.errors).map((e) => e.message),
       });
     }
-        console.error("Error registering user:", error);
-        res.status(500).json({ message: "Internal server error" });
+      next(error); // Pass the error to the next middleware (error handler)
     }
 };

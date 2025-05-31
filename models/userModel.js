@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import validator from "validator";
+import bcrypt from "bcryptjs";
+import JWT from "jsonwebtoken";
 
 const userSchema = new mongoose.Schema({    
     name: {
@@ -34,6 +36,24 @@ const userSchema = new mongoose.Schema({
 }, {
     timestamps: true, // Automatically manage createdAt and updatedAt fields
 });
+
+// Pre-save hook to hash the password before saving the user
+userSchema.pre('save', async function (next) {
+        const salt = await bcrypt.genSalt(10); // Generate a salt
+        this.password = await bcrypt.hash(this.password, salt); // Hash the password with the salt
+        next(); // Proceed to save the user
+});
+
+
+// JSON Web Token (JWT) method to generate a token for the user
+userSchema.methods.createJWT = function () {
+    const token = JWT.sign({ userId: this._id }, process.env.JWT_SECRET, {
+        expiresIn: '30d', // Token expiration time
+    });
+    return token; // Return the generated token
+};
+
+
 
 const User = mongoose.model('User', userSchema);
  
