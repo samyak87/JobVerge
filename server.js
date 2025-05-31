@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import connectDB from './config/db.js ';
 import testRoutes from './routes/testRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import errorMiddleware from './middlewares/errorMiddleware.js';
 
 
 dotenv.config();
@@ -30,6 +31,9 @@ app.use('/api', testRoutes);
 // want to use auth routes
 app.use('/api/auth', authRoutes);
 
+
+// validation error middleware
+app.use(errorMiddleware);
 
 const port = process.env.PORT || 8080;
 
