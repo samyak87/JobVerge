@@ -45,10 +45,17 @@ userSchema.pre('save', async function (next) {
 });
 
 
+
+// function to compare the provided password with the hashed password in the database
+userSchema.methods.comparePassword = async function (password) {
+    const isMatch = await bcrypt.compare(password, this.password); // Compare the provided password with the hashed password
+    return isMatch; // Return true if they match, false otherwise
+};
+
 // JSON Web Token (JWT) method to generate a token for the user
 userSchema.methods.createJWT = function () {
     const token = JWT.sign({ userId: this._id }, process.env.JWT_SECRET, {
-        expiresIn: '30d', // Token expiration time
+        expiresIn: '10d', // Token expiration time
     });
     return token; // Return the generated token
 };
