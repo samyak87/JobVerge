@@ -8,7 +8,7 @@ import connectDB from './config/db.js ';
 import testRoutes from './routes/testRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import errorMiddleware from './middlewares/errorMiddleware.js';
-
+import userRoutes from './routes/userRoutes.js';
 
 dotenv.config();
 
@@ -31,6 +31,8 @@ app.use('/api', testRoutes);
 // want to use auth routes
 app.use('/api/auth', authRoutes);
 
+// want to use user routes
+app.use('/api/user', userRoutes);
 
 // validation error middleware
 app.use(errorMiddleware);
