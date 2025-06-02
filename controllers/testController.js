@@ -4,6 +4,7 @@ export function testController(req, res) {
 }
 
 export function testController2(req, res) {     
-  res.status(200).json({ message: 'Post test route is working!' });
+  const { name } = req.body;
+  res.status(200).send(`Your Name Is ${name}`);
   console.log('Post test route is working!');
 }

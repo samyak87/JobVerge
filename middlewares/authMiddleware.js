@@ -1,19 +1,21 @@
 import JWT from 'jsonwebtoken';
 
 const userAuth = async(req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
+  const authHeader = req.headers.authorization;
 
-  if (!token) {
-    return res.status(401).json({ message: 'No token provided' });
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+next('Authentication token is missing or invalid');
   }
-
-  JWT.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ message: 'Invalid token' });
-    }
-    req.user = decoded;
+   
+  const token = authHeader.split(' ')[1];
+  
+  try {
+    const payload = JWT.verify(token, process.env.JWT_SECRET);
+    req.user = { userId: payload.userId, name: payload.name };
     next();
-  });
+  } catch (error) {
+    next('Authentication token is invalid or expired');
+  }
 }
 
 export default userAuth;
