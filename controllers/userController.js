@@ -1,36 +1,44 @@
-import e from "express";
+import userModel from '../models/userModel.js';
 
-export const getUserProfile = (req, res) => {      
-    const user = req.user; // Assuming user is set in the auth middleware
-    res.status(200).json({
-        userId: user.userId,
-        name: user.name,
-        email: user.email, // Assuming email is part of the user object
-    });
-    console.log('User profile retrieved successfully!');
+export const getUserController = (req, res) => {      
+    // const user = req.user; // Assuming user is set in the auth middleware
+    // res.status(200).json({
+    //     userId: user.userId,
+    //     name: user.name,
+    //     email: user.email, // Assuming email is part of the user object
+    // });
+    // console.log('User profile retrieved successfully!');
     }
 
  export const updateUserController = async (req, res,next) => {
-    const { name, email } = req.body;
-    const user = req.user; // Assuming user is set in the auth middleware
+    const { name, email, password,location } = req.body;
 
     // Validate input
-    if (!name || !email) {
-        return res.status(400).json({ message: "Name and email are required" });
+    if (!name || !email || !location) {
+        next({ message: "All fields are required" });
     }
 
-    // Update user details (this would typically involve a database operation)
+    // Here you would typically check if the user exists in the database
+    const user = await userModel.findOne({ _id: req.user.userId });
     user.name = name;
-    user.email = email;
+    user.email = email; 
+    user.location = location;
 
-    // Respond with updated user information
+
+    
+
+    await user.save();
+
+    const token = user.createJWT(); // Assuming createJWT is a method on the user model
+
     res.status(200).json({
+        success: true,
         message: "User updated successfully",
+        token,
         user: {
-            userId: user.userId,
             name: user.name,
             email: user.email,
+            location: user.location,
         },
     });
-    console.log('User updated successfully!');
 }   
