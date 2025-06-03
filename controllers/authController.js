@@ -46,7 +46,7 @@ export const loginController = async (req, res, next) => {
   //compare password
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
-    next("Invalid Useraname or password");
+    next("Invalid Useraname or passwordd");
   }
   user.password = undefined;
   const token = user.createJWT();

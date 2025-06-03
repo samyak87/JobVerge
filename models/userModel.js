@@ -55,7 +55,7 @@ userSchema.methods.comparePassword = async function (password) {
 
 // JSON Web Token (JWT) method to generate a token for the user
 userSchema.methods.createJWT = function () {
-    const token = JWT.sign({ userId: this._id }, process.env.JWT_SECRET, {
+    const token = JWT.sign({ userId: this._id,  role: this.isAdmin}, process.env.JWT_SECRET, {
         expiresIn: '10d', // Token expiration time
     });
     return token; // Return the generated token

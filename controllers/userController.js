@@ -1,13 +1,14 @@
 import userModel from '../models/userModel.js';
 
-export const getUserController = (req, res) => {      
-    // const user = req.user; // Assuming user is set in the auth middleware
-    // res.status(200).json({
-    //     userId: user.userId,
-    //     name: user.name,
-    //     email: user.email, // Assuming email is part of the user object
-    // });
-    // console.log('User profile retrieved successfully!');
+export const getUsersController = async(req, res) => {      
+     // getting all users
+    const users = await userModel.find({}).select("-password"); // Exclude password field
+    res.status(200).json({
+        success: true,
+        message: "Users fetched successfully",
+        users,
+
+    });
     }
 
  export const updateUserController = async (req, res,next) => {
