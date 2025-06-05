@@ -9,6 +9,7 @@ import testRoutes from './routes/testRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import errorMiddleware from './middlewares/errorMiddleware.js';
 import userRoutes from './routes/userRoutes.js';
+import jobsRoutes from './routes/jobsRoutes.js';
 
 dotenv.config();
 
@@ -33,6 +34,9 @@ app.use('/api/auth', authRoutes);
 
 // want to use user routes
 app.use('/api/user', userRoutes);
+
+// want to use job routes
+app.use('/api/jobs', jobsRoutes);
 
 // validation error middleware
 app.use(errorMiddleware);
