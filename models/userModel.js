@@ -29,10 +29,12 @@ const userSchema = new mongoose.Schema({
     location: { 
         type: String,
     },   
-    isAdmin: {
-        type: Boolean,
-        default: false,
-    },
+    role: {
+        type: String,
+        enum: ['user', 'admin'], // Define the roles available
+        default: 'user' // Default role is user
+    }
+
 }, {
     timestamps: true, // Automatically manage createdAt and updatedAt fields
 });
@@ -55,12 +57,16 @@ userSchema.methods.comparePassword = async function (password) {
 
 // JSON Web Token (JWT) method to generate a token for the user
 userSchema.methods.createJWT = function () {
-    const token = JWT.sign({ userId: this._id,  role: this.isAdmin}, process.env.JWT_SECRET, {
-        expiresIn: '10d', // Token expiration time
-    });
-    return token; // Return the generated token
+  return JWT.sign(
+    {
+      userId: this._id,
+      name: this.name,
+      role: this.role   // ✅ Add this line
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "1d" }
+  );
 };
-
 
 
 const User = mongoose.model('User', userSchema);

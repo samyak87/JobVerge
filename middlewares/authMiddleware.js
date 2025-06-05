@@ -11,7 +11,7 @@ next('Authentication token is missing or invalid');
   
   try {
     const payload = JWT.verify(token, process.env.JWT_SECRET);
-    req.user = { userId: payload.userId, name: payload.name };
+    req.user = { userId: payload.userId, name: payload.name,  role: payload.role }; // Assuming the payload contains userId, name, and role
     next();
   } catch (error) {
     next('Authentication token is invalid or expired');
