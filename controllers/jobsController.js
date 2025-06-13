@@ -1,19 +1,28 @@
-export const jobsController = async (req, res) => { 
+import jobsModel from "../models/jobsModel.js";
+
+export const createJobsController = async (req, res,next) => { 
     try {
-        // Simulate fetching jobs from a database
-        const jobs = [
-        { id: 1, position: "Software Engineer", company: "Tech Corp", workLocation: "New York" },
-        { id: 2, position: "Data Scientist", company: "Data Inc", workLocation: "San Francisco" },
-        ];
-        
-        res.status(200).json({
-        success: true,
-        data: jobs,
-        });
+        const { company, position } = req.body;
+        if (!company || !position) {
+            return res.status(400).json({ message: "Company and position are required" });
+        }
+        req.body.createdBy = req.user.name;
+        const job= await jobsModel.create(req.body);
+        res.status(201).json({ message: "Job created successfully", job });
+    
     } catch (error) {
-        res.status(500).json({
-        success: false,
-        message: "Server Error",
-        });
+        res.status(500).json({ message: "Error creating job", error: error.message });
+    
+}
+};
+
+export const getJobsController = async (req, res,next) => {
+    try {
+        // fetch all jobs
+
+        const jobs = await jobsModel.find({ createdBy: req.user.name }).sort({ createdAt: -1 });
+        res.status(200).json({ message: "Jobs fetched successfully", jobs });
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching jobs", error: error.message });
     }
 }

@@ -27,7 +27,7 @@ const jobSchema = new mongoose.Schema(
       required: [true, "Work location is required"],
     },
     createdBy: {
-      type: mongoose.Types.ObjectId,
+      type: String,
       ref: "User",
     },
   },
