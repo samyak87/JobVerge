@@ -1,10 +1,16 @@
 import express from 'express';
-import { createJobsController, getJobsController} from '../controllers/jobsController.js';
+import { createJobsController, getJobsController, updateJobController} from '../controllers/jobsController.js';
 import userAuth from '../middlewares/authMiddleware.js';
 import { authoriseAdmin } from '../middlewares/authoriseAdmin.js';
 const router = express.Router();
 
+// creating job route
 router.post('/create-job',userAuth, authoriseAdmin, createJobsController);
+
+// getting jobs route
 router.get('/get-jobs',userAuth,getJobsController);
+
+// modify job route
+router.patch('/update-job/:id', userAuth, authoriseAdmin, updateJobController);
 
 export default router;
