@@ -1,5 +1,5 @@
 import express from 'express';
-import { createJobsController, getJobsController, updateJobController} from '../controllers/jobsController.js';
+import { createJobsController, getJobsController, updateJobController, deleteJobController} from '../controllers/jobsController.js';
 import userAuth from '../middlewares/authMiddleware.js';
 import { authoriseAdmin } from '../middlewares/authoriseAdmin.js';
 const router = express.Router();
@@ -13,4 +13,6 @@ router.get('/get-jobs',userAuth,getJobsController);
 // modify job route
 router.patch('/update-job/:id', userAuth, authoriseAdmin, updateJobController);
 
+// delete job route
+ router.delete('/delete-job/:id', userAuth, authoriseAdmin, deleteJobController); 
 export default router;
