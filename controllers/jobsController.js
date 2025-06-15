@@ -52,10 +52,21 @@ export const getJobsController = async (req, res,next) => {
             queryResult.sort({ position: -1 }); 
         }
 
+
+        // Pagination logic
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+        queryResult.skip(skip).limit(limit);   
+
+        // jobs count
+        const totalJobs = await jobsModel.countDocuments(queryObject);
+        const numOfPages = Math.ceil(totalJobs / limit);
+
         const jobs = await queryResult;  
 
         // const jobs = await jobsModel.find({ createdBy: req.user.userId}).sort({ createdAt: -1 });
-        res.status(200).json({ message: "Jobs fetched successfully", length: jobs.length, jobs });
+        res.status(200).json({ message: "Jobs fetched successfully", totalJobs, jobs, numOfPages });
     } catch (error) {
         res.status(500).json({ message: "Error fetching jobs", error: error.message });
     }
