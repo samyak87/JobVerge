@@ -89,8 +89,15 @@ export const jobStatsController = async (req, res) => {
            
         ]); 
 
+        // default to empty array if no stats found
+        const defaultStats = {
+            pending: stats.pending || 0,
+            interview: stats.interview ||  0,
+            reject: stats.reject || 0
+        };
+
         
-        res.status(200).json({ message: "Job stats fetched successfully", stats });
+        res.status(200).json({ totalJobs: stats.length,defaultStats });
     } catch (error) {
         res.status(500).json({ message: "Error fetching job stats", error: error.message });
     }
