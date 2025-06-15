@@ -19,10 +19,43 @@ export const createJobsController = async (req, res,next) => {
 
 export const getJobsController = async (req, res,next) => {
     try {
-        // fetch all jobs
+        const { status, workType, search, sort} = req.query;
+        
+        const queryObject = {
+            createdBy: req.user.userId,
+        };
 
-        const jobs = await jobsModel.find({ createdBy: req.user.userId}).sort({ createdAt: -1 });
-        res.status(200).json({ message: "Jobs fetched successfully", jobs });
+        if (status && status !== "all") {
+            queryObject.status = status;
+        }
+
+        if (workType && workType !== "all") {
+            queryObject.workType = workType;
+        }
+
+        if (search) {
+            queryObject.position = { $regex: search, $options: "i" }; // case-insensitive search
+        } 
+
+
+
+        const queryResult = jobsModel.find(queryObject);
+
+        // Sorting logic
+        if (sort === "latest") {
+            queryResult.sort({ createdAt: -1 });
+        } else if (sort === "oldest") {
+            queryResult.sort({ createdAt: 1 });
+        }   else if (sort === "a-z") {  
+            queryResult.sort({ position: 1 });
+        } else if (sort === "z-a") {
+            queryResult.sort({ position: -1 }); 
+        }
+
+        const jobs = await queryResult;  
+
+        // const jobs = await jobsModel.find({ createdBy: req.user.userId}).sort({ createdAt: -1 });
+        res.status(200).json({ message: "Jobs fetched successfully", length: jobs.length, jobs });
     } catch (error) {
         res.status(500).json({ message: "Error fetching jobs", error: error.message });
     }
