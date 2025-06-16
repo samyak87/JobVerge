@@ -3,6 +3,10 @@ import dotenv from 'dotenv';
 
 import cors from 'cors';
 import morgan from 'morgan';
+import helmet from 'helmet';
+import xss from 'xss-clean';
+import mongoSanitize from 'express-mongo-sanitize';
+import rateLimit from 'express-rate-limit';
 
 import connectDB from './config/db.js ';
 import testRoutes from './routes/testRoutes.js';
@@ -10,6 +14,7 @@ import authRoutes from './routes/authRoutes.js';
 import errorMiddleware from './middlewares/errorMiddleware.js';
 import userRoutes from './routes/userRoutes.js';
 import jobsRoutes from './routes/jobsRoutes.js';
+import { clean } from 'xss-clean/lib/xss.js';
 
 dotenv.config();
 
@@ -21,11 +26,18 @@ const app = express();
 
 
 // middlewares
+app.use(helmet()); // for securing HTTP headers
+app.use(xss()); // for sanitizing user input
 app.use(express.json()); // for parsing application/json  
 app.use(cors()); // for enabling CORS
 app.use(morgan("dev")); // for logging HTTP requests
-
-
+app.use(mongoSanitize()); // for sanitizing user input to prevent NoSQL injection
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+}));
 // want to use test routes
 app.use('/api', testRoutes);
 
