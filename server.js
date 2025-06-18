@@ -14,7 +14,6 @@ import userRoutes from './routes/userRoutes.js';
 import jobsRoutes from './routes/jobsRoutes.js';
 import resumeRoutes from './routes/resumeRoutes.js';
 
-import { clean } from 'xss-clean/lib/xss.js';
 
 dotenv.config();
 
@@ -36,6 +35,24 @@ app.use(rateLimit({
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 }));
+
+
+// resume upload middleware
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    // Multer-specific errors
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ message: 'File too large. Max 10MB allowed.' });
+    }
+    return res.status(400).json({ message: err.message });
+  } else if (err) {
+    // Other errors
+    return res.status(400).json({ message: err.message });
+  }
+  next();
+});
+
+
 // want to use test routes
 app.use('/api', testRoutes);
 
