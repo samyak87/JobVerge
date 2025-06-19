@@ -14,7 +14,6 @@ import userRoutes from './routes/userRoutes.js';
 import jobsRoutes from './routes/jobsRoutes.js';
 import resumeRoutes from './routes/resumeRoutes.js';
 
-
 dotenv.config();
 
 // mongoDB connection
